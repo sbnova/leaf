@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:mybatis-spring="http://mybatis.org/schema/mybatis-spring"
+	xsi:schemaLocation="http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-4.3.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
+		http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring-1.2.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd">
+	
+	<!-- Root Context: defines shared resources visible to all other web components --> 
+	<!-- DB 연결 --> <!-- 1 -->
+	<bean id="dataSource"  
+	class="org.springframework.jdbc.datasource.DriverManagerDataSource"> 
+	<property name="driverClassName" value="com.mysql.jdbc.Driver"/> 
+	<property name="url" value="jdbc:mysql://localhost:3306/statue?characterEncoding=UTF-8"/>
+	<property name="username" value="root"/> 
+	<property name="password" value="123456"/> 
+	</bean> 
+	<!-- mybatis 연결 -->
+	<bean id="sqlSessionFactory" 
+	class="org.mybatis.spring.SqlSessionFactoryBean"> 
+	<property name="dataSource" ref="dataSource"/>  <!-- 2 -->
+	<property name="configLocation" value="classpath:/mybatis-config.xml"/> <!-- 3 -->
+	<property name="mapperLocations" value="classpath:mappers/**/*.xml"/> <!-- 4 -->
+	</bean> 
+	
+	<!-- 5 -->
+ 	<bean id="sqlSession" 
+	class="org.mybatis.spring.SqlSessionTemplate" 
+	destroy-method="clearCache"> 
+	<constructor-arg name="sqlSessionFactory" 
+	ref="sqlSessionFactory"/> 
+	</bean>	 
+	<!-- base-package 이하에서  @Controller 제외 @Component 가 있는 클래스를 찾아서 애플리케이션컨텍스트에 빈으로 등록하는 설정 -->
+	<context:component-scan base-package="com.statue.domain"/>
+	<context:component-scan base-package="com.statue.persistence"/>
+	<context:component-scan base-package="com.statue.service"/>
+	
+	<!-- <context:component-scan base-package="com.statue">
+
+  	<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+
+	</context:component-scan> -->
+	<!-- 루트에서는
+	서블릿컨텍스트와 반대의 의미.
+	기본 패키지내에 모든 스트레오애노테이션으로 표현된 클래스를 빈으로 등록하되 @Controller로 표현된 클래스는 제외(context:exclude-filter)하겠다.는 의미
+	-->
+</beans>

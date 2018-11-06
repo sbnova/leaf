@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="30 seconds">
+		<!-- console log Start Pom.xml에 로그 저장소 확인하기 : ch.qos.logback1.1.2 -->
+	<appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern> %d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+		</encoder>
+	</appender>
+	
+	<!-- file log인 경우 간단 : 우선 주석처리함
+	<appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender"
+		<file>logs/project9.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePatter>log/project9.%d{yyyy-MM-dd}.log</fileNamePattern>
+			<maxHistory>60</maxHistory>
+		</rollingPolicy>	
+		<encoder>
+			<pattern>%-4realtive [%thread] %-5level %logger{35} -%msg%n</pattern>
+		</encoder>
+	</appender>
+	 -->
+	
+	<!-- console log End -->
+	
+	<!-- file log 압축해서 사용하는 경우 -->
+		<appender name="fileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>c:\LogExample\logexample2.log</file>
+			<encoder class="ch.qos.logback.classic.encoder.PattenLayoutEncoder">
+				<Pattern>
+					%d{HH:mm:ss.SSS} [%thread] %-5level %logger{5} -%msg%n
+				</Pattern>
+			</encoder>
+			
+			<!-- 로그를 남기는 파일의 용량이 50KB가 넘으면 이를 압축파일로
+				만들고 새로 로그파일로 만들라는 정책 -->
+			<triggeringPolicy
+				class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+				<MaxFileSize>10KB</MaxFileSize>	
+			</triggeringPolicy>
+			
+			<!-- 파일을 덮어쓰는 정책 -->
+			<rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+				<FileNamePattern>C:\LogExample\logexample2.%i.log.zip</FileNamePattern>
+				<!-- MinIndex가 1이고, MaxIndex가 10이므로,
+					위의 파일 이름 패턴에 따라 아래 로그 파일이 생길 것이다.
+					logexample2.1.log.zip logexample2.2.log.zip ... logexample2.10.log.zip
+					이 상태에서 또 10KB가 넘으면 logexample21.log.zip이 된다
+				 -->
+				 <MinIndex>1</MinIndex>
+				 <MaxIndex>10</MaxIndex>
+			</rollingPolicy>
+		</appender>
+		
+		<!-- gu.common.logExample 테스트 파일에 간단히 출력해봄 -. 맨아래 추가하여 확인해보았음 -->
+			<!-- <logger name="gu.common.logExample" level="debug" additivity="false">
+				<appender-ref ref="fileAppender" />
+				</logger>
+		-->
+		
+		<!-- level은 debug < info < warn < error 순으로 높습니다. level 순위조절가능 -->
+		<logger name="org.springframework" level="info"/>
+		<logger name="org.springframework.security" level="info"/>
+		
+		<logger name="java.sql" level="error"/>
+		<logger name="jdbc.sqlonly" level="debug"/>
+		<logger name="jdbc.sqltiming" level="debug" />
+		<logger name="jdbc.audit" level="error"/>
+		<logger name="jdbc.resultset" level="error" />
+		
+		<root level="debug">
+			<appender-ref ref="console"/>
+			<appender-ref ref="fileAppender"/>
+		</root>
+			 
+</configuration>
